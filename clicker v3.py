@@ -29,7 +29,8 @@ def HoverColor(event):
 
 ### optellen
 def up():
-    global lastButton
+    global lastButton, amountUp
+    amountUp += 1
     lastButton = "up"
     root.counter += 1
     color()
@@ -41,7 +42,8 @@ def changeColor(event):
 
 ### aftellen
 def down():
-    global lastButton
+    global lastButton, amountDown
+    amountDown += 1 
     lastButton = "down"
     root.counter -= 1
     color()
