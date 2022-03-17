@@ -1,70 +1,106 @@
+from email import message
 import tkinter as tk
 from tkinter import *
 import tkinter
 import random
 import time
+from tkinter.messagebox import askretrycancel, showinfo
 
-actions  = ["press w", "press a", "press s", "press d", "double click"]
-root = tk.Tk()
-root.configure(bg="black")
-root.geometry("700x500")
+e = False
+actions  = ["press w", "press a", "press s", "press d", "single click", "double click", "triple click"]
+window = tk.Tk()
+window.configure(bg="black")
+window.geometry("700x500")
 
-
-scoreLabel = Label(root, text=0, height=2, width=30)
+score = 0
+scoreLabel = Label(window, text=0, height=2, width=30)
 scoreLabel.pack()
+displayScore = "score:", score
 def key_pressed(event):
+    global score
     if event.char == randomText:
         scoreLabel["text"] += 1
+        score += 1
         actionLabel.destroy()
         action()
     else:
         key()
 
-def action():
+def labelClick(event):
+    global score
+    scoreLabel["text"] += 2
+    score += 2
+    actionLabel.destroy()
+    action()
 
+def action():
     global randomText, actionLabel
     start.destroy()
     randomText = random.choice(actions)
     if randomText == "press w":
         randomText = "w"
+        key()
     elif randomText == "press a":
         randomText = "a"
+        key()
     elif randomText == "press s":
         randomText = "s"
+        key()
     elif randomText == "press d":
         randomText = "d"
+        key()
     else:
         pass
-    randomX = random.randint(0,700)
-    randomY = random.randint(0,500)
-    actionLabel = tkinter.Label(root, text=randomText,height=2, width=5, bg= "white", fg="black")
+    randomX = random.randint(0,600)
+    randomY = random.randint(0,400)
+    actionLabel = tkinter.Label(window, text=randomText,height=2, width=9, bg= "white", fg="black")
+    if randomText == "single click":
+        actionLabel.bind("<Button-1>", labelClick)
+    elif randomText == "double click":
+        actionLabel.bind("<Double-Button-1>", labelClick)
+    elif randomText == "triple click":
+        actionLabel.bind("<Triple-Button-1>", labelClick)
     actionLabel.place(x=randomX, y=randomY)
     key()
 
 def key():
-    root.bind("<Key>",key_pressed)
+    window.bind("<Key>",key_pressed)
 
+def retry():
+    global now, scoreLabel, e
+    retry = askretrycancel("Retry?", displayScore)
+    if retry:
+        scoreLabel["text"] = 0
+        actionLabel.destroy()
+        now = 4
+        action()
+    else:
+        window.destroy()
 
-start = tk.Button(root, text="Click here to start", command=action)
+start = tk.Button(window, text="Click here to start", command=action)
 start.pack()
-
-now = 3
+    
+now = 20
 class Clock():
     def __init__(self):
-        self.window = root
-        self.label = tk.Label(root, text=20, height= 2, width= 10)
+        global timerlabel
+        self.window = window
+        timerlabel = self.label = tk.Label(window, text=now, height= 2, width= 10)
         self.label.pack()
         self.label.place(x=0, y=0)
         self.update_clock()
         self.window.mainloop()
 
     def update_clock(self):
-        global now
+        global now, e
         self.label.configure(text=now)
-        now = now - 1
         self.window.after(1000, self.update_clock)
-        if now == 0:
-            self.window.destroy()
+        if now == 0 and e == False:
+            e = True
+            retry()
+        elif now > 0:
+            now = now - 1
+
 
 app=Clock()
-root.mainloop()
+window.mainloop()
