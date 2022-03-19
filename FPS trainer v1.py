@@ -1,4 +1,3 @@
-from email import message
 import tkinter as tk
 from tkinter import *
 import tkinter
@@ -7,6 +6,7 @@ import time
 from tkinter.messagebox import askretrycancel, showinfo
 
 e = False
+buttonClicked = False
 actions  = ["press w", "press a", "press s", "press d", "single click", "double click", "triple click"]
 window = tk.Tk()
 window.configure(bg="black")
@@ -15,12 +15,11 @@ window.geometry("700x500")
 score = 0
 scoreLabel = Label(window, text=0, height=2, width=30)
 scoreLabel.pack()
-displayScore = "score:", score
 def key_pressed(event):
     global score
     if event.char == randomText:
-        scoreLabel["text"] += 1
         score += 1
+        scoreLabel["text"] += 1
         actionLabel.destroy()
         action()
     else:
@@ -28,13 +27,15 @@ def key_pressed(event):
 
 def labelClick(event):
     global score
-    scoreLabel["text"] += 2
     score += 2
+    scoreLabel["text"] += 2
     actionLabel.destroy()
     action()
 
+
 def action():
-    global randomText, actionLabel
+    global randomText, actionLabel, buttonClicked
+    buttonClicked = True
     start.destroy()
     randomText = random.choice(actions)
     if randomText == "press w":
@@ -68,11 +69,14 @@ def key():
 
 def retry():
     global now, scoreLabel, e
-    retry = askretrycancel("Retry?", displayScore)
+    retry = askretrycancel("Retry?", f"""
+    Your score is: {score}.
+    Do you want to retry?""")
     if retry:
         scoreLabel["text"] = 0
         actionLabel.destroy()
-        now = 4
+        now = 2
+        e = False
         action()
     else:
         window.destroy()
@@ -80,7 +84,7 @@ def retry():
 start = tk.Button(window, text="Click here to start", command=action)
 start.pack()
     
-now = 20
+now = 4
 class Clock():
     def __init__(self):
         global timerlabel
@@ -101,6 +105,5 @@ class Clock():
         elif now > 0:
             now = now - 1
 
-
-app=Clock()
+app = Clock()
 window.mainloop()
