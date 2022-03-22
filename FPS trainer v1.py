@@ -1,12 +1,10 @@
-from cProfile import label
 import tkinter as tk
 from tkinter import *
 import tkinter
 import random
 import time
 import threading
-from tkinter.messagebox import askretrycancel, showinfo
-
+from tkinter.messagebox import askretrycancel
 
 
 actions  = ["press w", "press a", "press s", "press d", "single click", "double click", "triple click"]
@@ -37,8 +35,20 @@ def labelClick(event):
     actionLabel.destroy()
     action()
 
+def clock():
+    global timer
+    i = 0
+    now = 20
+    while i < 1:
+        timer.set(now)
+        time.sleep(1)
+        now = now - 1
+        if now == 0:
+            retry()
+
 def startTimer():
-    threading.Timer(1.0, clock).start()
+    global counter, timerlabel
+    counter = threading.Timer(1.0, clock).start()
     action()
 
 def action():
@@ -77,7 +87,7 @@ def key():
 def retry():
     global now, scoreLabel, e
     retry = askretrycancel("Retry?", f"""
-    Your score is: {score}.
+    Your score: {score}.
     Do you want to retry?""")
     if retry:
         scoreLabel["text"] = 0
@@ -88,17 +98,6 @@ def retry():
 
 start = tk.Button(window, text="Click here to start", command=startTimer)
 start.pack()
-    
 
-def clock():
-    global timer
-    i = 0
-    now = 2
-    while i < 1:
-        timer.set(now)
-        time.sleep(1)
-        now = now - 1
-        if now == 0:
-            retry()
 
 window.mainloop()
