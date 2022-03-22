@@ -1,20 +1,25 @@
+from cProfile import label
 import tkinter as tk
 from tkinter import *
 import tkinter
 import random
 import time
+import threading
 from tkinter.messagebox import askretrycancel, showinfo
 
-e = False
-buttonClicked = False
+
+
 actions  = ["press w", "press a", "press s", "press d", "single click", "double click", "triple click"]
 window = tk.Tk()
 window.configure(bg="black")
 window.geometry("700x500")
 
+timer= tk.StringVar(value= "loading")
 score = 0
 scoreLabel = Label(window, text=0, height=2, width=30)
 scoreLabel.pack()
+timerlabel = Label(window, textvariable=timer, height=2, width=5)
+timerlabel.pack()
 def key_pressed(event):
     global score
     if event.char == randomText:
@@ -32,10 +37,12 @@ def labelClick(event):
     actionLabel.destroy()
     action()
 
+def startTimer():
+    threading.Timer(1.0, clock).start()
+    action()
 
 def action():
     global randomText, actionLabel, buttonClicked
-    buttonClicked = True
     start.destroy()
     randomText = random.choice(actions)
     if randomText == "press w":
@@ -75,35 +82,23 @@ def retry():
     if retry:
         scoreLabel["text"] = 0
         actionLabel.destroy()
-        now = 2
-        e = False
-        action()
+        startTimer()
     else:
         window.destroy()
 
-start = tk.Button(window, text="Click here to start", command=action)
+start = tk.Button(window, text="Click here to start", command=startTimer)
 start.pack()
     
-now = 4
-class Clock():
-    def __init__(self):
-        global timerlabel
-        self.window = window
-        timerlabel = self.label = tk.Label(window, text=now, height= 2, width= 10)
-        self.label.pack()
-        self.label.place(x=0, y=0)
-        self.update_clock()
-        self.window.mainloop()
 
-    def update_clock(self):
-        global now, e
-        self.label.configure(text=now)
-        self.window.after(1000, self.update_clock)
-        if now == 0 and e == False:
-            e = True
+def clock():
+    global timer
+    i = 0
+    now = 2
+    while i < 1:
+        timer.set(now)
+        time.sleep(1)
+        now = now - 1
+        if now == 0:
             retry()
-        elif now > 0:
-            now = now - 1
 
-app = Clock()
 window.mainloop()
