@@ -12,12 +12,8 @@ window = tk.Tk()
 window.configure(bg="black")
 window.geometry("700x500")
 
-timer= tk.StringVar(value= "loading")
+
 score = 0
-scoreLabel = Label(window, text=0, height=2, width=30)
-scoreLabel.pack()
-timerlabel = Label(window, textvariable=timer, height=2, width=5)
-timerlabel.pack()
 def key_pressed(event):
     global score
     if event.char == randomText:
@@ -36,18 +32,23 @@ def labelClick(event):
     action()
 
 def clock():
-    global timer
-    i = 0
-    now = 20
-    while i < 1:
-        timer.set(now)
+    global timer, timerlabel
+    timer = 20
+    timeVar = tkinter.StringVar(value= str(timer))
+    timerlabel = Label(window, textvariable=timeVar, height=2, width=5)
+    timerlabel.pack()
+    for i in range(timer):
         time.sleep(1)
-        now = now - 1
-        if now == 0:
+        timer -= 1
+        timeVar.set(str(timer))
+        if timer == 0:
             retry()
-
+    
 def startTimer():
-    global counter, timerlabel
+    global counter, timerlabel, scoreLabel
+    scoreLabel = Label(window, text=0, height=2, width=5, font=("Comic Sans MS", 14))
+    scoreLabel.pack()
+    scoreLabel.place(x=640, y=0)
     counter = threading.Timer(1.0, clock).start()
     action()
 
@@ -92,6 +93,7 @@ def retry():
     if retry:
         scoreLabel["text"] = 0
         actionLabel.destroy()
+        timerlabel.destroy()
         startTimer()
     else:
         window.destroy()
